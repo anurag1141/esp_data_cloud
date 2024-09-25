@@ -22,7 +22,19 @@ void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
   pinMode(PIN, OUTPUT);
+  WiFi.mode(WIFI_STA);//as astation
   WiFi.mode(WIFI_STA);//as astation 
+  WiFi.begin(ssid, password);
+  Serial.println("\nConnecting to WiFi Network ..");
+ 
+  while(WiFi.status() != WL_CONNECTED)
+  {
+    Serial.print(".");
+    delay(100);
+  }
+  Serial.println("\nConnected to the WiFi network");
+  Serial.print("Local ESP32 IP: ");
+  Serial.println(WiFi.localIP()); 
   ThingSpeak.begin(Client);  //initialize thngspeak
 }
 
@@ -32,27 +44,29 @@ void loop() {
   //connect to wifi network
   if(WiFi.status()!=WL_CONNECTED)
   {
-    Serial.print("attempting to connect");
-    while(WiFi.status() !=WL_CONNECTED){
-      WiFi.begin(ssid,password);
-      delay(5000);
-    }
-    Serial.println("nConnected");
-    
-  }
-  data =touchRead(PIN);
-  Serial.print("touch sensor data is");
-  Serial.println(data);
-  delay(1000);
-// Write to ThingSpeak. There are up to 8 fields in a channel, allowing you to store up to 8 different
+    data =touchRead(PIN);
+    Serial.print("touch sensor data is");
+    Serial.println(data);
+    delay(1000);
+    // Write to ThingSpeak. There are up to 8 fields in a channel, allowing you to store up to 8 different
     // pieces of information in a channel.  Here, we write to field 1.
-  int x = ThingSpeak.writeField(myChannelNumber, 1, data, myWriteAPIKey);
-  if(x == 200){
+    int x = ThingSpeak.writeField(myChannelNumber, 1, data, myWriteAPIKey);
+    if(x == 200)
+    {
       Serial.println("Channel update successful.");
     }
     else{
       Serial.println("Problem updating channel. HTTP error code " + String(x));
     }
+    /*Serial.print("attempting to connect");
+    while(WiFi.status() !=WL_CONNECTED){
+      WiFi.begin(ssid,password);g
+      delay(5000);
+    }
+    Serial.println("nConnected");
+    
+  }*/
+ 
     
 
 }
